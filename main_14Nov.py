@@ -75,7 +75,7 @@ def main():
 					tab1.write(X.shape)
 					tab1.write(X)
 					X = X.T # Transpose data for PCA such that we have 625 features
-					tab1.write(X.shape)
+					tab2.write(X.shape)
 					
 					tab2.subheader("Create PCA Object")
 					pca = PCA(n_components=2) # Create PCA Object
@@ -84,8 +84,8 @@ def main():
 					tab2.write(pca.explained_variance_) # print variances of these components
 
 					X_pca = pca.transform(X) # Transform/Projects data on it's PCA components
-					tab2.write(X_pca.shape)
-					tab2.write(X_pca)
+					tab3.write(X_pca.shape)
+					tab3.write(X_pca)
 					
 					tab3.subheader("PCA components")
 					plt.scatter(X_pca[:, 0], X_pca[:, 1]) # Plot first two PCA components
@@ -106,7 +106,7 @@ def main():
 					plt.scatter(X_new[:, 0], X_new[:, 1], alpha=0.8)
 					plt.axis('equal');
 					tab3.pyplot(plt)
-					#plot_pca_components(X, 2) ## az in tabe bazgashti kharej nemishe
+					#plot_pca_components(X, 2) #
 			else:
 				st.write("Please Uplaod The file") 
 
