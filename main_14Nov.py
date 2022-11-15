@@ -40,7 +40,7 @@ def plot_pca_components(X, components=2):
     plot_pca_components(X, 2)
 
 def main():
-
+	flagfile = False
 	menu = ["Home", "Help", "About"]
 
 	choice = st.sidebar.selectbox("Menu", menu)
@@ -51,7 +51,9 @@ def main():
 
 		uploaded_file = st.file_uploader("Load weights/activations file")
 		
-		#if uploaded_file is not None:
+		if uploaded_file is not None:
+			flagfile = True
+
 			
 			
 			
@@ -61,49 +63,52 @@ def main():
 		check2 = st.checkbox("SR")
 		check3 = st.checkbox("Saliency")
 
-		if st.button("Run analysis"):	
-			if check1 == True:
-				tab1, tab2, tab3 = st.tabs(["📈 Chart", "🗃 Data", "PCA components"])
-				
-				tab1.subheader("A tab with a chart")
-				X_data = np.load(uploaded_file)
-				tab1.write(X_data.shape)
-				X = X_data[0, 0, ::, ::] # Slice data accordingly
-				tab1.write(X.shape)
-				tab1.write(X)
-				X = X.T # Transpose data for PCA such that we have 625 features
-				tab1.write(X.shape)
-				
-				tab2.subheader("Create PCA Object")
-				pca = PCA(n_components=2) # Create PCA Object
-				pca.fit(X) # Do PCA on Data X
-				tab2.write(pca.components_) # print PCA components
-				tab2.write(pca.explained_variance_) # print variances of these components
+		if st.button("Run analysis"):
+			if 	flagfile == True:
+				if check1 == True:
+					tab1, tab2, tab3 = st.tabs(["📈 head direction", "🗃 PCA Object", "PCA components"])
+					
+					tab1.subheader("the first head direction")
+					X_data = np.load(uploaded_file)
+					tab1.write(X_data.shape)
+					X = X_data[0, 0, ::, ::] # Slice data accordingly
+					tab1.write(X.shape)
+					tab1.write(X)
+					X = X.T # Transpose data for PCA such that we have 625 features
+					tab1.write(X.shape)
+					
+					tab2.subheader("Create PCA Object")
+					pca = PCA(n_components=2) # Create PCA Object
+					pca.fit(X) # Do PCA on Data X
+					tab2.write(pca.components_) # print PCA components
+					tab2.write(pca.explained_variance_) # print variances of these components
 
-				X_pca = pca.transform(X) # Transform/Projects data on it's PCA components
-				tab2.write(X_pca.shape)
-				tab2.write(X_pca)
-				
-				tab3.subheader("PCA components")
-				plt.scatter(X_pca[:, 0], X_pca[:, 1]) # Plot first two PCA components
-				tab3.pyplot(plt)
+					X_pca = pca.transform(X) # Transform/Projects data on it's PCA components
+					tab2.write(X_pca.shape)
+					tab2.write(X_pca)
+					
+					tab3.subheader("PCA components")
+					plt.scatter(X_pca[:, 0], X_pca[:, 1]) # Plot first two PCA components
+					tab3.pyplot(plt)
 
-				# Repeat process for 3 components
-				pca = PCA(n_components=3)
-				pca.fit(X)
-				X_pca = pca.transform(X)
-				tab3.write(X_pca.shape)
-				plt.scatter(X_pca[:, 0], X_pca[:, 2])
-				tab3.pyplot(plt)
+					# Repeat process for 3 components
+					pca = PCA(n_components=3)
+					pca.fit(X)
+					X_pca = pca.transform(X)
+					tab3.write(X_pca.shape)
+					plt.scatter(X_pca[:, 0], X_pca[:, 2])
+					tab3.pyplot(plt)
 
-				X_new = pca.inverse_transform(X_pca)
+					X_new = pca.inverse_transform(X_pca)
 
-				tab3.write(X_new.shape)
-				plt.scatter(X[:, 0], X[:, 1], alpha=0.2)
-				plt.scatter(X_new[:, 0], X_new[:, 1], alpha=0.8)
-				plt.axis('equal');
-				tab3.pyplot(plt)
-				#plot_pca_components(X, 2) ## az in tabe bazgashti kharej nemishe
+					tab3.write(X_new.shape)
+					plt.scatter(X[:, 0], X[:, 1], alpha=0.2)
+					plt.scatter(X_new[:, 0], X_new[:, 1], alpha=0.8)
+					plt.axis('equal');
+					tab3.pyplot(plt)
+					#plot_pca_components(X, 2) ## az in tabe bazgashti kharej nemishe
+			else:
+				st.write("Please Uplaod The file") 
 
 
 
