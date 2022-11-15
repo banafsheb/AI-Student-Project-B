@@ -102,7 +102,7 @@ def main():
 						st.pyplot(plt)
 						#plot_pca_components(X, 2) #
 			else:
-				st.write("Please Uplaod The file") 
+				st.write("Please upload the file. :)") 
 
 
 
