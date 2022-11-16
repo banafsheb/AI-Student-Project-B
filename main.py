@@ -50,15 +50,19 @@ def main():
 		
 		if uploaded_file is not None:
 			flagfile = True
-			
-		st.title("Select the process")
-		check1 = st.checkbox("PCA")
-		check2 = st.checkbox("SR")
-		check3 = st.checkbox("Saliency")
+		
+		proc = st.radio(
+			"Select the process",
+			('PCA', 'SR', 'Saliency'))
+	
+		#st.title("Select the process")
+		#check1 = st.radio("PCA")
+		#check2 = st.radio("SR")
+		#check3 = st.radio("Saliency")
 
 		if st.button("Run analysis"):
 			if 	flagfile == True:
-				if check1 == True:
+				if proc == 'PCA':
 					tab1, tab2, tab3 = st.tabs(["📈 head direction", "🗃 PCA Object", "PCA components"])
 					with tab1:
 						st.subheader("the first head direction")
@@ -101,7 +105,7 @@ def main():
 						plt.axis('equal');
 						st.pyplot(plt)
 						#plot_pca_components(X, 2) #
-				if check2 == True:
+				if proc == 'SR':
 					# Loading data and slice
 					X_original = np.load(uploaded_file)
 					X = X_original[::, 0, ::, ::] # Slice data accordingly
