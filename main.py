@@ -2,13 +2,13 @@ import streamlit as st
 import pandas as pd
 from PIL import Image
 from io import StringIO
-
-#from matplotlib import pyplot as plt
 from sklearn.decomposition import PCA
 import numpy as np
-import sys
+import sys, os
+import matplotlib as mpl
 import matplotlib.pyplot as plt
-
+import seaborn as sns
+import math
 
 from sklearn.preprocessing import StandardScaler 
 from sklearn.metrics import accuracy_score
@@ -63,7 +63,7 @@ def main():
 					with tab1:
 						st.subheader("the first head direction")
 						X_data = np.load(uploaded_file)
-						tab1.write(X_data.shape)
+						st.write(X_data.shape)
 						X = X_data[0, 0, ::, ::] # Slice data accordingly
 						st.write(X.shape)
 						st.write(X)
@@ -101,6 +101,63 @@ def main():
 						plt.axis('equal');
 						st.pyplot(plt)
 						#plot_pca_components(X, 2) #
+				if check2 == True:
+					# Loading data and slice
+					X_original = np.load(uploaded_file)
+					X = X_original[::, 0, ::, ::] # Slice data accordingly
+					st.write(X.shape)
+					def plot_heatmap(data):
+						#Plots heatmaps individually, carefull takes long
+						for hd in range(len(data)): # number of head directions # len(data) # 6 in example
+							for n in range(data.shape[2]): # number of neurons # data.shape[2] # 50 in example # data.shape[2]
+								# Get matrix of corresponding head direction and neuron
+								matrix = data[hd, ::, n] # example [0, 0, 0, 3, 2, 4.5, ...., 0]
+								# Reshaping it into k by k matrix [[],[],[],...,[]]
+								num = len(matrix)
+								k = int(math.sqrt(num))
+								matrix = matrix.reshape((k, k))
+								#Plot heatmap with seaborn library
+								sns.heatmap(matrix, linewidth=0.5) # TODO MAKE IT WITH SAME COLORMAP AND COLORCODING 
+								# Add title
+								plt.title(f"Headdirection {hd} Neuron {n}")
+								# Saveplot
+								#plt.savefig(f"plots/heatmap_{hd}_{n}.pdf", dpi=300, bbox_inches='tight')
+								#plt.close()
+								#plt.show()
+					
+					def plot_heatmap_small(data):
+						"""Plots heatmaps all small in one image"""
+						# Setup number of subplots
+						shape = data.shape # [6, 625, 50]
+						f, axes = plt.subplots(shape[2], shape[0], squeeze=True)
+						for hd in range(len(data)): # number of head directions # len(data) # 6 in example
+							for n in range(data.shape[2]): # number of neurons # data.shape[2] # 50 in example # data.shape[2]
+								# Get matrix
+								matrix = data[hd, ::, n]
+								# Reshape matrix
+								num = len(matrix)
+								k = int(math.sqrt(num))
+								matrix = matrix.reshape((k, k))
+								# Normalize matrix to work with colormap -> Divide by maximum value
+								maximum = np.amax(matrix)
+								maximum = max(maximum, 1)
+								matrix = matrix / maximum
+								# Plot heatmap
+								axes[n, hd].imshow(matrix, cmap='hot', interpolation='nearest')
+								# Removing all ticks and numbers
+								axes[n, hd].axes.get_xaxis().set_visible(False)
+								axes[n, hd].axes.get_yaxis().set_visible(False)
+						# Resize image to fit everything
+						f.set_size_inches((5*shape[0], 5*shape[2]))
+						f.savefig("heatmap_small.pdf", dpi=300, bbox_inches='tight')
+						#plt.show(X)
+						
+					plot_heatmap_small(X)
+					#plot_heatmap(X)
+			
+
+
+
 			else:
 				st.write("Please upload the file. :)") 
 
